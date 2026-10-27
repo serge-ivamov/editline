@@ -1959,8 +1959,15 @@ static el_status_t c_complete(void)
             return CSstay;
         }
 
+		/*
+         * Quote characters the shell would interpret.  UTF-8 bytes
+         * (>= 0x80) are data, not control characters, even on platforms
+         * where char is signed: quoting them would corrupt multibyte
+         * filenames.
+         */
         while (*p) {
             if (!rl_complete_is_custom()
+				&& (unsigned char)*p < 0x80
                 && (*p < ' ' || strchr(SEPS, *p) != NULL)
                 && (!unique || p[1] != 0)) {
                 *q++ = '\\';
